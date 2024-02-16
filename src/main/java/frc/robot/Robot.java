@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+// import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,8 +20,17 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private final PWMSparkMax m_leftDrive = new PWMSparkMax(0);
-  private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
+  public static final int k_leftDriveMotorID = 0;
+  public static final int k_leftFollowerMotorID = 1;
+  public static final int k_rightDriveMotorID = 2;
+  public static final int k_rightFollowerMotorID = 3;
+  // private final PWMSparkMax m_leftDrive = new PWMSparkMax(0);
+  // private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
+  private final WPI_TalonSRX m_leftDrive = new WPI_TalonSRX(k_leftDriveMotorID);
+  private final WPI_TalonSRX m_leftFollower = new WPI_TalonSRX(k_leftFollowerMotorID);
+  private final WPI_TalonSRX m_rightDrive = new WPI_TalonSRX(k_rightDriveMotorID);
+  private final WPI_TalonSRX m_rightFollower = new WPI_TalonSRX(k_rightFollowerMotorID);
+  
   private final DifferentialDrive m_robotDrive =
       new DifferentialDrive(m_leftDrive::set, m_rightDrive::set);
   private final XboxController m_controller = new XboxController(0);
@@ -39,7 +50,12 @@ public class Robot extends TimedRobot {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
+    m_leftDrive.setInverted(false);
+    m_leftFollower.setInverted(false);
+    m_leftFollower.set(ControlMode.Follower, k_leftDriveMotorID);
     m_rightDrive.setInverted(true);
+    m_rightFollower.setInverted(true);
+    m_rightFollower.set(ControlMode.Follower, k_rightDriveMotorID);
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
